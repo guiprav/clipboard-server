@@ -2,6 +2,11 @@
 let fs = require('fs');
 let express = require('express');
 let basicAuth = require('basic-auth');
+let bodyParser = (
+	require('body-parser').urlencoded ({
+		extended: true
+	})
+);
 let app = express();
 let passwords = JSON.parse (
 	fs.readFileSync (
@@ -31,6 +36,7 @@ app.use(function(req, res, next) {
 	req.userName = user.name;
 	next();
 });
+app.use(bodyParser);
 {
 	let port = process.env.PORT || 3000;
 	app.listen(port);
