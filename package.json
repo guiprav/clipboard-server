@@ -10,5 +10,8 @@
   "bugs": {
     "url": "https://github.com/n2liquid/clipboard-server/issues"
   },
-  "homepage": "https://github.com/n2liquid/clipboard-server#readme"
+  "homepage": "https://github.com/n2liquid/clipboard-server#readme",
+  "dependencies": {
+    "express": "^4.13.1"
+  }
 }
