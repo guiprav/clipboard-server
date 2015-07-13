@@ -1,0 +1,54 @@
+<!doctype html>
+<meta charset="utf-8">
+<meta name="viewport" content="initial-scale=1">
+<style>
+	*
+	{
+		box-sizing: border-box;
+	}
+	body
+	{
+		text-align: center;
+	}
+	textarea
+	{
+		width: 100%;
+		height: 400px;
+		margin-top: 8px;
+	}
+</style>
+<form method="post">
+	<button type="button" onclick="app.copy()">
+		Copy
+	</button>
+	<button type="button" onclick="app.paste()">
+		Paste
+	</button>
+	<button type="submit">
+		Save
+	</button>
+	<button type="button" onclick="app.clear() && app.save()">
+		Clear
+	</button>
+	<textarea name="clipboardData">{{clipboardData}}</textarea>
+</form>
+<script type="text/javascript">
+	'use strict';
+	var textarea = document.querySelector('textarea');
+	var submitButton = document.querySelector('[type="submit"]');
+	window.app = {};
+	app.copy = function() {
+		textarea.select();
+		document.execCommand('copy');
+	};
+	app.paste = function() {
+		textarea.select();
+		document.execCommand('paste');
+	};
+	app.save = function() {
+		submitButton.click();
+	};
+	app.clear = function() {
+		textarea.value = '';
+	};
+</script>
