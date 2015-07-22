@@ -8,6 +8,7 @@ let bodyParser = (
 		extended: true
 	})
 );
+let bcrypt = require('bcrypt-nodejs');
 let app = express();
 let passwords = JSON.parse (
 	fs.readFileSync (
@@ -36,13 +37,24 @@ app.use(function(req, res, next) {
 		unauthorized();
 		return;
 	}
-	let password = passwords[user.name];
-	if(!password || user.pass !== password) {
+	let hash = passwords[user.name];
+	if(!hash) {
 		unauthorized();
 		return;
 	}
-	req.userName = user.name;
-	next();
+	bcrypt.compare(user.pass, hash, function(err, passwordCorrect) {
+		if(err) {
+			unauthorized();
+			console.error(err);
+			return;
+		}
+		if(!passwordCorrect) {
+			unauthorized();
+			return;
+		}
+		req.userName = user.name;
+		next();
+	});
 });
 app.use(bodyParser);
 app.get('/', function(req, res) {
