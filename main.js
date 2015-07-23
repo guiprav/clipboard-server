@@ -55,14 +55,20 @@ app.get('/sign-in', function(req, res) {
 	res.send(signInTemplate());
 });
 {
-	function unauthorized(res, userName) {
+	function unauthorized(res, userName, more) {
+		more = more || {};
 		if(userName) {
 			console.log("Authentication failure for user \"" + userName + "\".");
 		}
-		res.status(401);
-		res.send(signInTemplate({
-			badCredentials: true,
-		}));
+		if(more.redirect) {
+			res.redirect('/');
+		}
+		else {
+			res.status(401);
+			res.send(signInTemplate({
+				badCredentials: true,
+			}));
+		}
 	}
 	app.post('/sign-in', function(req, res) {
 		let userName = req.body.userName;
@@ -88,7 +94,11 @@ app.get('/sign-in', function(req, res) {
 	});
 	app.use(function(req, res, next) {
 		if(!req.session.userName) {
-			unauthorized(res);
+			unauthorized (
+				res, null, {
+					redirect: true,
+				}
+			);
 			return;
 		}
 		next();
