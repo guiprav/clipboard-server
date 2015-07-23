@@ -21,6 +21,9 @@
 	<button type="button" onclick="app.clear() && app.save()">
 		Clear
 	</button>
+	<button type="button" onclick="app.signOut()">
+		Sign out
+	</button>
 	<textarea name="clipboardData">{{clipboardData}}</textarea>
 </form>
 <script type="text/javascript">
@@ -37,5 +40,8 @@
 	};
 	app.clear = function() {
 		textarea.value = '';
+	};
+	app.signOut = function() {
+		window.location.href = '/sign-out';
 	};
 </script>

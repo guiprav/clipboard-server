@@ -94,6 +94,10 @@ app.get('/sign-in', function(req, res) {
 		next();
 	});
 }
+app.get('/sign-out', function(req, res) {
+	delete req.session.userName;
+	res.redirect('/');
+});
 app.use('/:name', function(req, res, next) {
 	req.clipboardFilePath = (
 		__dirname + '/' + req.session.userName
