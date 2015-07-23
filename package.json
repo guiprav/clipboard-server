@@ -12,7 +12,6 @@
   },
   "homepage": "https://github.com/n2liquid/clipboard-server#readme",
   "dependencies": {
-    "basic-auth": "^1.0.3",
     "bcrypt-nodejs": "0.0.3",
     "body-parser": "^1.13.2",
     "express": "^4.13.1",
