@@ -15,9 +15,6 @@
 	<button type="button" onclick="app.copy()">
 		Copy
 	</button>
-	<button type="button" onclick="app.paste()">
-		Paste
-	</button>
 	<button type="submit">
 		Save
 	</button>
@@ -34,10 +31,6 @@
 	app.copy = function() {
 		textarea.select();
 		document.execCommand('copy');
-	};
-	app.paste = function() {
-		textarea.select();
-		document.execCommand('paste');
 	};
 	app.save = function() {
 		submitButton.click();
