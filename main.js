@@ -17,6 +17,13 @@ let passwords = JSON.parse (
 		}
 	)
 );
+hbs.registerPartial (
+	'head', fs.readFileSync (
+		__dirname + '/head.partial.hbs', {
+			encoding: 'utf8',
+		}
+	)
+);
 let pageTemplate = hbs.compile (
 	fs.readFileSync (
 		__dirname + '/page-template.hbs', {
