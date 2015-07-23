@@ -1,0 +1,30 @@
+{{> head}}
+<style>
+	#login-box
+	{
+		position: relative;
+		top: 50%;
+		transform: translateY(-50%);
+		max-width: 200px;
+		margin: 0 auto;
+		text-align: center;
+	}
+	#login-box input
+	, #login-box button
+	{
+		display: block;
+		width: 100%;
+	}
+</style>
+<form id="login-box" method="post">
+	{{#if badCredentials}}
+		<p>
+			Bad credentials.
+		</p>
+	{{/if}}
+	<input name="userName" placeholder="User name">
+	<input type="password" name="password" placeholder="Password">
+	<button type="submit">
+		Sign in
+	</button>
+</form>

@@ -2,7 +2,7 @@
 let fs = require('fs');
 let hbs = require('handlebars');
 let express = require('express');
-let basicAuth = require('basic-auth');
+let session = require('express-session');
 let bodyParser = (
 	require('body-parser').urlencoded ({
 		extended: true
@@ -31,45 +31,73 @@ let pageTemplate = hbs.compile (
 		}
 	)
 );
-app.use(function(req, res, next) {
-	let user = basicAuth(req);
-	function unauthorized() {
-		if(user) {
-			console.log("Authentication failure for user \"" + user.name + "\".");
+let signInTemplate = hbs.compile (
+	fs.readFileSync (
+		__dirname + '/sign-in-template.hbs', {
+			encoding: 'utf8',
 		}
-		res.set('WWW-Authenticate', 'Basic realm=Authorization Required');
-		res.sendStatus(401);
-	}
-	if(!user) {
-		unauthorized();
-		return;
-	}
-	let hash = passwords[user.name];
-	if(!hash) {
-		unauthorized();
-		return;
-	}
-	bcrypt.compare(user.pass, hash, function(err, passwordCorrect) {
-		if(err) {
-			unauthorized();
-			console.error(err);
-			return;
-		}
-		if(!passwordCorrect) {
-			unauthorized();
-			return;
-		}
-		req.userName = user.name;
-		next();
-	});
-});
+	)
+);
+app.use(session({
+	resave: false,
+	saveUninitialized: false,
+	secret: process.env.SESSION_SECRET || function() {
+		throw new Error("Missing session secret (SESSION_SECRET).");
+	}(),
+}));
 app.use(bodyParser);
 app.get('/', function(req, res) {
-	res.redirect('/main');
+	res.redirect(
+		(req.session.userName && '/main') || '/sign-in'
+	);
 });
+app.get('/sign-in', function(req, res) {
+	res.send(signInTemplate());
+});
+{
+	function unauthorized(res, userName) {
+		if(userName) {
+			console.log("Authentication failure for user \"" + userName + "\".");
+		}
+		res.status(401);
+		res.send(signInTemplate({
+			badCredentials: true,
+		}));
+	}
+	app.post('/sign-in', function(req, res) {
+		let userName = req.body.userName;
+		let password = req.body.password;
+		let hash = passwords[userName];
+		if(!hash) {
+			unauthorized(res, userName);
+			return;
+		}
+		bcrypt.compare(password, hash, function(err, passwordCorrect) {
+			if(err) {
+				unauthorized(res, userName);
+				console.error('bcrypt.compare error:', err);
+				return;
+			}
+			if(!passwordCorrect) {
+				unauthorized(res, userName);
+				return;
+			}
+			req.session.userName = userName;
+			res.redirect('/');
+		});
+	});
+	app.use(function(req, res, next) {
+		if(!req.session.userName) {
+			unauthorized(res);
+			return;
+		}
+		next();
+	});
+}
 app.use('/:name', function(req, res, next) {
 	req.clipboardFilePath = (
-		__dirname + '/' + req.userName + '-' + req.params.name +  '.clipboard'
+		__dirname + '/' + req.session.userName
+		+ '-' + req.params.name +  '.clipboard'
 	);
 	next();
 });
