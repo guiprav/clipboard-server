@@ -52,6 +52,10 @@ app.get('/', function(req, res) {
 	);
 });
 app.get('/sign-in', function(req, res) {
+	if(req.session.userName) {
+		res.redirect('/');
+		return;
+	}
 	res.send(signInTemplate());
 });
 {
